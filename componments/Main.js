@@ -2,39 +2,87 @@ import { useState } from "react"
 export default function  Main(){
   let newArr = ['6am','7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm','5pm','6pm','7pm']
 
-  const [store,setStore] = useState('');
+  const [store,setStore] = useState([]);
+  const [total_V,settotal_V]=useState([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+  
   
   
 
   function handler(e){
     e.preventDefault();
 
-    let store = {
+    let loc = {
       location: e.target.location.value,
-      min: e.target.min.value,
-      max: e.target.max.value,
-      avg: e.target.avg.value,
-      random: Math.floor(Math.random() * (e.target.max.value - e.target.min.value + 1 ) + e.target.min.value),
+
+      random: creatArray(e),
     }
-    setStore(store)
+    setStore([...store,loc])
+   
+    
      
     
   }
 
-  function table(e){
+  function creatArray(e)
+  {
+    let temp_total_v=[...total_V]
+    let temp=[]
+    let sum=0
+    for (let i = 0; i<14; i++){
+      let rand = (Math.ceil(Math.random() * (e.target.max.value - e.target.min.value + 1 ) + e.target.min.value))*e.target.avg.value
+      sum+= rand
+      temp.push(rand)
+      temp_total_v[i]+=rand
+    }
+    temp_total_v[14]+=sum
+    temp.push(sum)
+    settotal_V(temp_total_v)
+    return temp
+
+  }
+
+
+  function table(props,total){
+    console.log(total)
     
-    return     <tbody>
-    <td>{JSON.stringify(store.location)}</td>
+    return     <tbody className="border border-green-600">
+
+
+
+{
+      
+      
+      props.map(item => {
+        return(
+          <tr className="border border-green-600">
+          
+          <td className="border border-green-600">{JSON.stringify(item.location)}</td>
+          {item.random.map(num =>{
+            return (
+              <td className="border border-green-600">{num}</td>
+            )
+          })}
+          {/* <td>{JSON.stringify(item.random)}</td> */}
+          </tr>
+        )
+      })
+    }
+
+
+    <tr className="border border-green-600">
+    <td className="border border-green-600">Total</td>
       {
+      
         
-        newArr.map(item => {
+        total.map(item => {
           return(
             
-            <td>{JSON.stringify(store.random)}</td>
+            <td className="border border-green-600">{JSON.stringify(item)}</td>
           )
         })
       }
-      <td>{JSON.stringify(store.max)}</td>
+</tr>
+      {/* <td>{JSON.stringify(props.max)}</td> */}
 
     </tbody>
 
@@ -54,13 +102,13 @@ export default function  Main(){
         <h1 className = "p-5 text-2xl">Create Cookie Stand</h1>
 
         <form onSubmit = {handler}>
-        <label for='loc' className = "inline-block m-3" >Location</label>
+        <label  className = "inline-block m-3" >Location</label>
         <input name="location" type='text'></input>
-        <label className = "inline-block m-3" for='loc'>Minimum Customers Per Hour</label>
+        <label className = "inline-block m-3" >Minimum Customers Per Hour</label>
         <input name="min" type='number'></input>
-        <label for='loc' className = "inline-block m-3">Maximum Customers Per Hour</label>
+        <label  className = "inline-block m-3">Maximum Customers Per Hour</label>
         <input name="max" type='number'></input>
-        <label for='loc' className = "inline-block m-3">Average Cookies per Sale</label>
+        <label  className = "inline-block m-3">Average Cookies per Sale</label>
         <input name="avg" type='number'></input>
         <button className = "p-8 py-5 m-3 bg-green-500" type = "submit">Create</button>
 
@@ -88,7 +136,7 @@ export default function  Main(){
             </tr>
           </thead>
 
-          {table()}
+          {table(store,total_V)}
 
         </table>
         
